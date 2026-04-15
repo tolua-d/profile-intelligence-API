@@ -150,12 +150,8 @@ class ProfileViewSet(viewsets.ViewSet):
             query &= Q(age_group__iexact=age_group)
         
         profiles = profile.filter(query)
-        index_map = {}
 
-        if profiles:
-            index_map = {obj.id: idx + 1 for idx, obj in enumerate(profiles)}
-
-        serializer = ProfileListSerializer(profiles, many=True, context={"index_map": index_map})
+        serializer = ProfileListSerializer(profiles, many=True)
 
         return Response({
             "status": "success",

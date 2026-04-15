@@ -14,10 +14,3 @@ class ProfileListSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ("id", "name", "gender", "age", "age_group", "country_id")
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        index = self.context.get("index_map", {})
-        index_id = index.get(instance.id)
-
-        data["id"] = f"id-{index_id}"
-        return data
