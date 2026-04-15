@@ -129,7 +129,6 @@ class ProfileViewSet(viewsets.ViewSet):
         
         return Response({
             "status": "success",
-            "message": "Profile Data",
             "data": ProfileDataSerializer(profile).data
         }, status=status.HTTP_200_OK)
 

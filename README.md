@@ -40,7 +40,7 @@ Successful Response:
     }
 }
 
-2. GET /api/profiles/<id>
+2. GET /api/profiles/{id}
 
 Example Request:
 GET /api/profiles/019d926d-3915-79fb-a8d8-73b79370f601
@@ -48,7 +48,6 @@ GET /api/profiles/019d926d-3915-79fb-a8d8-73b79370f601
 Successful Response:
 {
     "status": "success",
-    "message": "Profile Data",
     "data": {
         "id": "019d926d-3915-79fb-a8d8-73b79370f601",
         "name": "john",
