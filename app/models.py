@@ -26,7 +26,7 @@ class Profile(models.Model):
     country_id = models.CharField(max_length=4)
     country_probability = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(choices=STATUS_CHOICES, default=ACTIVE)
+    status = models.CharField(choices=STATUS_CHOICES, default=ACTIVE, max_length=10)
 
     all_objects = models.Manager()
     objects = NonDeletedObjectsManager()

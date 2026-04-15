@@ -123,7 +123,7 @@ DELETE /api/profiles/0a3f8eb3-49a0-483f-b3b9-fea97739af80
 Run Locally
 1. Clone repository: git clone https://github.com/tolua-d/profile-intelligence-API.git
 2. Install dependecies: pip install -r requirements.txt
-3. Set necessary environment variables:  SECRET_KEY
+3. Set necessary environment variables:  SECRET_KEY, DATABASE_URL
 4. Run the server: python manage.py runserver
 
 Author
