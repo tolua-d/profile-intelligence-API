@@ -8,19 +8,23 @@ class Command(BaseCommand):
         # open data file and write to memory
         with open("seed_profiles.json", "r") as file:
             data = json.load(file)
+        self.stdout.write("it has really began")
         profiles = data.get("profiles")
         # check if data already exists and if so, continue
         data_list = []
         for item in profiles:
+            self.stdout.write("items in profiles>>>>>>")
             name = item.get("name")
             if Profile.objects.filter(name=name).exists():
                 continue
             # append Profile item to list
             data_list.append(Profile(**item))
 
+        self.stdout.write("it has began again>>>>")
         # bulk create to db
         with transaction.atomic():
             Profile.objects.bulk_create(data_list)
+            self.stdout.write("has been created")
 
 
     def handle(self, *args, **options):
