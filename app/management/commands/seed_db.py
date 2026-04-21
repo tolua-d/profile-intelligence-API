@@ -5,7 +5,7 @@ import json
 
 class Command(BaseCommand):
     def seed_db(self):
-        # open data file and write to memory
+        # open data file and write to memory 
         with open("seed_profiles.json", "r") as file:
             data = json.load(file)
         profiles = data.get("profiles")
