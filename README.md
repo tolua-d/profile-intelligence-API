@@ -1,6 +1,6 @@
 # profile-intelligence-API
 
-Profile Intelligence API
+Queryable Intelligence Engine
 
 Overview:
 This is a simple REST API that creates and stores a person's name, gender, age 
@@ -124,6 +124,9 @@ GET /api/profiles?gender=male&country_id=NG
 }
 
 4. GET /api/profiles/search?q=male and female  teenagers from south africa
+This endpoint takes in a query parameter q in the natural langauge sequence.
+
+Successful Response:
 {
     "status": "success",
     "page": 1,
