@@ -12,10 +12,12 @@ class Command(BaseCommand):
         profiles = data.get("profiles")
         # check if data already exists and if so, continue
         data_list = []
+        existing_names = set(
+            Profile.objects.values_list("name", flat=True)
+        )
         for item in profiles:
-            self.stdout.write("items in profiles>>>>>>")
             name = item.get("name")
-            if Profile.objects.filter(name=name).exists():
+            if name in existing_names:
                 continue
             # append Profile item to list
             data_list.append(Profile(**item))
