@@ -418,7 +418,7 @@ CSRF_COOKIE_SECURE=True
 GITHUB_CLIENT_ID=prod-client-id
 GITHUB_CLIENT_SECRET=prod-client-secret
 GITHUB_REDIRECT_URI=https://insighta.io/auth/github/callback/
-FRONTEND_URL=https://app.insighta.io
+FRONTEND_URL=https://app.insighta.io 
 
 # Logging
 LOG_LEVEL=INFO
