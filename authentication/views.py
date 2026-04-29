@@ -239,7 +239,7 @@ class AuthViewSet(viewsets.ViewSet):
                         secure=True,
                         samesite="Lax",
                         max_age=604800
-                    )
+                    ) 
                 
                 return response
             except Exception as e:
