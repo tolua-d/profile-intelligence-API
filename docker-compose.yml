@@ -29,7 +29,7 @@ services:
       RATELIMIT_ENABLE: "True"
     
     ports:
-      - "${API_PORT}:8000"
+      - "8000:8000"
     
     depends_on:
       db:
