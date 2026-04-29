@@ -1,12 +1,9 @@
 {
-  "build": {
-    "builder": "NIXPACKS"
-  },
   "deploy": {
-    "startCommand": "python -m pip install gunicorn && python manage.py collectstatic --noinput &&   python manage.py migrate --noinput && ~/.local/bin/gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 1 --timeout 120 --log-level info",
-     "healthcheckPath": "/api/v2/health/",
+    "startCommand": "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 1 --timeout 120 --log-level debug",
+    "healthcheckPath": "/api/v2/health/",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
-}   
+}
