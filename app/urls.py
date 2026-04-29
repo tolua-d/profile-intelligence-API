@@ -12,5 +12,8 @@ urlpatterns = [
     path('profiles/<id>', views.ProfileViewSet.as_view({
         'get': 'get_profile',
         'delete': 'delete_profile'
-    }))
+    })),
+    path('profiles/export/csv', views.ProfileViewSet.as_view({
+        'get': 'export_profiles'
+    }), name='profile-export-csv'),
 ]

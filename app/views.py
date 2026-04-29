@@ -1,5 +1,8 @@
+import csv
 import json
+import logging
 import re
+from django.http import HttpResponse
 import requests
 from django.core.paginator import Paginator
 from django.db import transaction
@@ -8,12 +11,17 @@ from django.shortcuts import render
 from rest_framework.views import Response
 from rest_framework import viewsets, status
 from requests import HTTPError
-from .serializers import ProfileDataSerializer, ProfileListSerializer, ProfileSerializer
+from rest_framework.permissions import IsAuthenticated
+from .serializers import ProfileDataSerializer, ProfileSerializer
 from .models import DELETED, Profile
+from authentication.permissions import IsAnalystOrReadOnly, IsAnalyst, IsAdminOrAnalyst
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
 class ProfileViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated, IsAnalystOrReadOnly]
     @transaction.atomic
     def create_profile(self, request):
         def fetch_external_api(url, api_name):
@@ -138,7 +146,7 @@ class ProfileViewSet(viewsets.ViewSet):
     def get_profiles(self, request):
         query_params = {k.lower().strip(): v for k, v in request.GET.items()}
         page = query_params.get("page", 1)
-        page_size = query_params.get("page_size", 10)
+        limit = query_params.get("limit", 10)
         gender = query_params.get("gender")
         country_id = query_params.get("country_id")
         age_group = query_params.get("age_group")
@@ -191,20 +199,20 @@ class ProfileViewSet(viewsets.ViewSet):
             query &= Q(country_probability__gte=float(min_country_probability))
         
         profiles = profile.filter(query)
-        if int(page_size) > 50:
-            page_size = 50
+        if int(limit) > 50:
+            limit = 50
         if sort_by:
             profiles = profiles.order_by(sort_by)
 
         serializer = ProfileDataSerializer(profiles, many=True)
 
-        paginator = Paginator(serializer.data, page_size)
+        paginator = Paginator(serializer.data, limit)
         page_obj  = paginator.get_page(page)
 
         return Response({
             "status": "success",
             "page": page,
-            "limit": page_size,
+            "limit": limit,
             "total": paginator.count,
             "data": page_obj.object_list
         }, status=status.HTTP_200_OK) 
@@ -230,7 +238,7 @@ class ProfileViewSet(viewsets.ViewSet):
             query_params = {k.lower().strip(): v for k, v in request.GET.items()}
             search_logic: str = query_params.get("q")
             page = query_params.get("page", 1)
-            page_size = int(query_params.get("page_size", 10))
+            limit = int(query_params.get("limit", 10))
             allowed_patterns = re.compile(r"^[a-zA-Z0-9\s]+$")
             query_is_safe = bool(allowed_patterns.match(search_logic.strip()))
 
@@ -330,18 +338,18 @@ class ProfileViewSet(viewsets.ViewSet):
                     "message": "Profile not found"
                 }, status=status.HTTP_404_NOT_FOUND) 
             
-            if page_size > 50:
-                page_size = 50
+            if limit > 50:
+                limit = 50
 
             serializer = ProfileDataSerializer(profiles, many=True)
 
-            paginator = Paginator(serializer.data, page_size)
+            paginator = Paginator(serializer.data, limit)
             page_obj  = paginator.get_page(page)
 
             return Response({
                 "status": "success",
                 "page": page,
-                "limit": page_size,
+                "limit": limit,
                 "total": paginator.count,
                 "data": page_obj.object_list
             }, status=status.HTTP_200_OK) 
@@ -350,3 +358,57 @@ class ProfileViewSet(viewsets.ViewSet):
                 "status": "error",
                 "message": "Server failure"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+    
+    @transaction.atomic
+    def export_profiles(self, request):
+        """Export profiles as CSV (requires analyst role)"""
+        if request.user.role not in ["admin", "analyst"]:
+            return Response({
+                "error": "Analyst role required for exports"
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        # Get all profiles with filters
+        profiles = Profile.objects.all().order_by('-created_at')
+        
+        # Apply filters if provided
+        gender = request.GET.get("gender")
+        age_group = request.GET.get("age_group")
+        country_id = request.GET.get("country_id")
+        
+        filters = Q()
+        if gender:
+            filters &= Q(gender=gender.lower())
+        if age_group:
+            filters &= Q(age_group=age_group.lower())
+        if country_id:
+            filters &= Q(country_id=country_id.upper())
+        
+        profiles = profiles.filter(filters)
+        
+        # Create CSV response
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="profiles_export.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow([
+            'ID', 'Name', 'Gender', 'Gender Probability', 'Age', 'Age Group',
+            'Country ID', 'Country Name', 'Country Probability', 'Created At'
+        ])
+        
+        for profile in profiles:
+            writer.writerow([
+                profile.id,
+                profile.name,
+                profile.gender,
+                profile.gender_probability,
+                profile.age,
+                profile.age_group,
+                profile.country_id,
+                profile.country_name,
+                profile.country_probability,
+                profile.created_at.isoformat()
+            ])
+        
+        logger.info(f"Profiles exported: {profiles.count()} records by user {request.user.email}")
+        
+        return response
