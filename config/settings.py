@@ -38,7 +38,7 @@ DEBUG = True
 
 AUTH_USER_MODEL = 'authentication.User'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*'] 
 
 # CORS settings
 CORS_ALLOW_CREDENTIALS = True
