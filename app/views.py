@@ -11,7 +11,7 @@ from django.shortcuts import render
 from rest_framework.views import Response
 from rest_framework import viewsets, status
 from requests import HTTPError
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import ProfileDataSerializer, ProfileSerializer
 from .models import DELETED, Profile
 from authentication.permissions import IsAnalystOrReadOnly, IsAnalyst, IsAdminOrAnalyst
@@ -414,6 +414,7 @@ class ProfileViewSet(viewsets.ViewSet):
         return response
     
 class HealthCheck(viewsets.ViewSet):
+    permission_classes = [AllowAny]
     @transaction.atomic
     def health_check(self, request):
         return Response({
