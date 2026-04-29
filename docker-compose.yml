@@ -47,7 +47,7 @@ services:
       "
     
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://0.0.0.0:8000/admin/login/"]
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8000/api/v2/health"]
       interval: 10s
       timeout: 5s
       retries: 5

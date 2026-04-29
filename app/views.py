@@ -412,3 +412,11 @@ class ProfileViewSet(viewsets.ViewSet):
         logger.info(f"Profiles exported: {profiles.count()} records by user {request.user.email}")
         
         return response
+    
+class HealthCheck(viewsets.ViewSet):
+    @transaction.atomic
+    def health_check(self, request):
+        return Response({
+            'status': 200,
+            'message': 'ok'
+        }, status=status.HTTP_200_OK)

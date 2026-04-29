@@ -16,4 +16,7 @@ urlpatterns = [
     path('profiles/export/csv', views.ProfileViewSet.as_view({
         'get': 'export_profiles'
     }), name='profile-export-csv'),
+    path("health", views.HealthCheck.as_view({
+        "get": "health_check"
+    }))
 ]
