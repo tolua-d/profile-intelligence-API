@@ -70,7 +70,7 @@ class AuthViewSet(viewsets.ViewSet):
                 request.GET.get("code_verifier")
                 or request.data.get("code_verifier")
                 or request.session.get("code_verifier")
-            )
+            ) 
 
             if not code or not code_verifier:
                 logger.warning("GitHub callback: Missing code or verifier")
