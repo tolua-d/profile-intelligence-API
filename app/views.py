@@ -415,7 +415,6 @@ class ProfileViewSet(viewsets.ViewSet):
     
 class HealthCheck(viewsets.ViewSet):
     permission_classes = [AllowAny]
-    @transaction.atomic
     def health_check(self, request):
         return Response({
             'status': 200,
